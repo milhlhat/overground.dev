@@ -1,17 +1,21 @@
 import React from 'react'
+import Head from './components/head'
 import { DocsThemeConfig } from 'nextra-theme-docs'
-
 const config: DocsThemeConfig = {
-  logo: <span><b>OVERGROUND.DEV</b></span>,
+  head: Head,
+  logo: <span ><b style={{cursor: "pointer"}}>OVERGROUND.DEV</b></span>,
+  faviconGlyph: 'O',
+  useNextSeoProps() {
+    return {
+      titleTemplate: "%s – OVERGROUND.DEV",
+    };
+  },
   project: {
-    link: 'https://github.com/shuding/nextra-docs-template',
+    link: 'https://github.com/milhlhat/overground.dev',
   },
-  chat: {
-    link: 'https://discord.com',
-  },
-  docsRepositoryBase: 'https://github.com/shuding/nextra-docs-template',
+  docsRepositoryBase: 'https://github.com/milhlhat/overground.dev',
   footer: {
-    text: 'Nextra Docs Template',
+    text: '@milhlhat',
   },
 }
 

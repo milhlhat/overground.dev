@@ -1,0 +1,70 @@
+# Nén ảnh
+
+> Image optimization is both an art and science
+
+Tối ưu hình ảnh không chỉ là công nghệ, designer là người hiểu về nhưng hình ảnh mà họ đang làm việc, họ có thể tối ưu hình ảnh mà không làm mất đi chất lượng của nó.
+
+Về phía công nghệ, đến nay đã có nhiều thuật toán, công nghệ hiệu quả để giảm dung lượng hình ảnh thông qua việc loại bỏ những thông tin không cần thiết, những thông tin này có thể là những thông tin không nhìn thấy được, hoặc là những thông tin không cần thiết để hiển thị hình ảnh đó.
+
+
+## Ảnh vector
+
+Hầu hết trình duyệt đều hỗ trợ Scalable Vector Graphics (SVG), SVG base trên XML format. Để tạo ra SVG từ ảnh bitmap, bạn có thể sử dụng [Inkscape](https://inkscape.org/en/), [Adobe Illustrator](http://www.adobe.com/products/illustrator.html). Hoặc có thể dùng text editor để tạo ra SVG file.
+
+```xml filename="default.svg" copy
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 17.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.2" baseProfile="tiny" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+    x="0px" y="0px" viewBox="0 0 612 792" xml:space="preserve">
+<g id="XMLID_1_">
+  <g>
+    <circle fill="red" stroke="black" stroke-width="2" stroke-miterlimit="10" cx="50" cy="50" r="40"/>
+  </g>
+</g>
+</svg>
+```
+
+Ví dụ trên là file SVG tạo từ Adobe Illustrator, ngoài thuộc tính về ảnh thì trong file SVG còn có những thuộc tính khác như `xmlns`, `viewBox`, `xml:space`, `stroke-miterlimit`... Những thuộc tính này không cần thiết, bạn có thể xóa bỏ chúng để giảm dung lượng file SVG.
+Bằng việc xoá bỏ những thuộc tính không cần thiết, ta đã giảm được 58% dung lượng file SVG.
+
+```xml filename="compressed.svg" copy
+<svg version="1.2" baseProfile="tiny" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 612 792"><circle fill="red" stroke="#000" stroke-width="2" stroke-miterlimit="10" cx="50" cy="50" r="40"/></svg>
+```
+
+Ngoài cách xoá thông tin thủ công, bạn có thể sử dụng tool [SVGO](https://github.com/svg/svgo) đều cho ra kết quả tương tự.
+
+## Ảnh raster
+
+Ảnh raster là 1 grid 2 chiều nên cách tính dung lượng đơn giản hơn nhiều, ví dụ ảnh size 100x100 pixel sẽ có tổng 10,000 pixels. Trong ví dụ này ảnh có dải màu là 'RGBA':
+R (Red channel), G (Green channel), B (Blue channel), A (Alpha channel). Mỗi channel có 256 giá trị từ 0 đến 255(8 bits) = 8 bits x 4 channels = 32 bits. Vậy 1 pixel sẽ có dung lượng 32 bits. Tổng dung lượng của ảnh này là (100x100)10,000 pixels x 32 bits = 320,000 bits = 40,000 bytes = 39.06 KB.
+
+| Dimensions | Pixels  | File size |
+| :--------- | :-----: | --------: |
+| 100 x 100  | 10,000  |     39 KB |
+| 200 x 200  | 40,000  |    156 KB |
+| 300 x 300  | 90,000  |    351 KB |
+| 500 x 500  | 250,000 |    977 KB |
+| 800 x 800  | 640,000 |   2500 KB |
+
+39kb cho 100x100 không phải là vấn đề, nhưng khi ảnh lớn hơn, dung lượng sẽ tăng lên rất nhanh. Vì vậy, việc tối ưu ảnh là rất cần thiết.
+
+Mình lấy ví dụ cách tối ưu ảnh bằng cách giảm số màu trên ảnh.
+
+
+![](https://web-dev.imgix.net/image/admin/ssek7uXzhs67joEbp0P8.png?auto=format&w=1224)
+*Left to right (PNG): 32-bit (16M colors), 7-bit (128 colors), 5-bit (32 colors).*
+
+Ảnh bên trái trước khi nén dung lượng thể hiện màu sắc bầu trời tốt nhất (Các thông số phức tạp như gradient, transparent). Ảnh bên phải là ảnh sau khi nén, màu sắc bị mất nhưng dung lượng đã giảm đi rất nhiều. Như vậy tuỳ vào từng mục đích sử dụng khác nhau mà ta có thể chọn cách nén phù hợp. Không nhất thiết phải sử dụng ảnh 32-bit cho mọi trường hợp. Tuy nhiên cũng không nên sử dụng ảnh 5-bit vì sẽ làm mất đi nhiều thông tin quan trọng.
+
+## Image optimization checklist 
+
+
+1. Ưu tiên sử dụng SVG: rất tốt khi scale
+2. Luôn xoá những thông tin không cần thiết trong file SVG
+3. Sử dụng WebP hoặc AVIF thay những format cũ hơn: WebP và AVIF thường nhỏ hơn rất nhiều so với những format cũ.
+4. Chọn format ảnh raster phù hợp tránh lãng phí bits (RGB, RGBA)
+5. Bỏ thông tin không cần thiết trong ảnh như định vị, thông tin camera...
+6. Automate, automate, automate: Luôn sử dụng tool để tối ưu ảnh.
+7. Chọn size ảnh phù hợp: Không nên sử dụng ảnh lớn hơn kích thước hiển thị trên trình duyệt.
+
+_Ref: [web.dev](https://web.dev/choose-the-right-image-format/#choose-the-right-image-format)_

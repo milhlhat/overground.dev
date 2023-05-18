@@ -1,0 +1,80 @@
+
+```html filename="index.html" copy
+<img src="beautiful-tshirt.webp" loading="lazy" />
+```
+
+Ảnh trên website được ra đời từ năm 1993, chúng được sử dụng để truyền tải thông tin một cách nhanh chóng và dễ dàng. Tuy nhiên, ảnh cũng là một trong những nguyên nhân chính gây chậm tải trang web. Vì vậy, việc tối ưu hình ảnh là một trong những việc cần làm để tăng tốc độ tải trang web.
+
+Theo báo cáo của [HTTP Archive](https://httparchive.org), trung bình một trang web sử dụng 21% băng thông để tải ảnh. Điều này có nghĩa là, nếu bạn tối ưu hình ảnh trên website, bạn có thể giảm được 21% băng thông và tăng tốc độ tải trang web lên đáng kể.
+
+## Giải pháp thay thế hình ảnh
+
+Chung ta biết rằng, đối với người dùng ảnh sẽ tiếp sẽ dễ tiếp cận hơn văn bản. Vì vậy, sử dụng hình ảnh là 1 trong những cách tốt nhất thể thể hiện thông tin. Tuy nhiên cũng có thể sử dụng hình ảnh một cách không hiệu quả, khiến cho website của bạn chậm hơn.
+Chúng ta có thể lựa chọn các phương phát thay thể tối ưu hơn sử dụng hình ảnh nếu có thể:
+  - CSS (Gradient, Box-shadow, Animation, ...)
+  - Web font (Icon, Text, ...)
+
+Ưu điểm của 2 loại này so với ảnh là có thể copy dữ liệu, tìm kiếm, zoom, và thân thiện với những thiết bị có DPI cao.
+
+## Định dạng ảnh
+
+![So sánh ảnh vector và raster khi zoom](https://web-dev.imgix.net/image/admin/dJuB2DQcbhtwD5VdPVlR.png?auto=format&w=940)
+*So sánh ảnh vector và raster khi zoom* 
+
+- **Ảnh vector**: sử dụng line, curve, shape
+để tạo ra hình ảnh 
+- **Ảnh raster**: sử dụng pixel để tạo ra hình ảnh
+
+Mỗi định dạng đều có ưu nhược điểm khác nhau. Ảnh vector sẽ phù hợp để tạo ra các hình ảnh đơn giản như logo, icon, ... Ảnh raster sẽ phù hợp để tạo ra các hình ảnh phức tạp như ảnh chụp, ảnh minh họa, ...
+
+## Độ phân giải
+
+Độ phân giải của ảnh được đo bằng pixel. Trong phát triển web chung ta cần quan tâm đến 2 loại pixel:
+
+- **CSS pixel**: độ phân giải của ảnh trên màn hình
+- **Device pixel**: độ phân giải của ảnh trên thiết bị
+
+
+![So sánh độ phân giải CSS pixel và Device pixel](https://web-dev.imgix.net/image/admin/oQV7qJ9fUMkYsKlUMrL4.png?auto=format&w=940)
+ *So sánh độ phân giải CSS pixel và Device pixel*
+
+Như ví dụ trên, các thiết bị Hight DPI (HiDPI) hiển thị kết quả rất đẹp. Đối với ảnh vector, chúng tự tăng lên phù hợp với độ phân giải của thiết bị. **Đối với ảnh raster, chúng ta cần cung cấp ảnh có độ phân giải cao hơn để có thể hiển thị đẹp trên các thiết bị HiDPI, và đây là vấn đề chính của chúng ta.**
+
+Thêm 1 ví dụ để hình dung thay đổi pixel trên các thiết bị khác nhau khi hiển thị ảnh 100x100(CSS pixel):
+| Tỉ lệ | Pixel | Dung lượng (4 bytes/pixel) |
+| :----- | :----: | ----: |
+| 1x | 100 x 100 = 10,000 | 40,000 bytes |
+| 2x | 100 x 100 x 4 = 40,000 | 160,000 bytes |
+| 3x | 100 x 100 x 9 = 90,000 | 360,000 bytes |
+
+Như ví dụ trên, dung lượng của ảnh tăng lên theo tỉ lệ bình phương của pixel. Thiết bị HiDPI sẽ yêu cầu ảnh có độ phân giải cao hơn để hiển thị đẹp. Qua các ví dụ trên thì túm cái quần lại là:
+
+- Dùng ảnh vector bất cứ khi nào có thể
+- Nếu bắt buộc phải dùng ảnh raster, hãy dùng [responsive](#responsive-images)
+
+## Định dạng ảnh raster
+
+Mỗi định dạng ảnh raster thể hiện thuật toán nén, tính năng, và tương thích với các thiết bị khác nhau. Lại làm cái bảng cho dễ hình dung:
+| Format | Transparency | Animation | Browser
+| :----- | :----: | ----: | ----: |
+|PNG| Yes| No| All|
+|JPEG| No |No |All|
+|WebP| Yes| Yes| [All modern browsers](https://caniuse.com/?search=webp)|
+|AVIF| Yes| Yes| [No](https://caniuse.com/avif)|
+
+2 Format raster phổ biến nhất là PNG và JPEG. Bên cạnh đó còn có WebP và AVIF. WebP được Google phát triển, AVIF được Netflix phát triển. 2 định dạng này có thể nén ảnh tốt hơn PNG và JPEG. Tuy nhiên, chúng không được tương thích với tất cả các trình duyệt. Nếu bạn muốn sử dụng 2 định dạng này, hãy sử dụng [picture](#picture) để tạo ra các ảnh thay thế.
+
+## Thay thế định dạng ảnh cũ
+
+- Animation: Sử dụng Video thay GIF: GIF chỉ hộ trợ 256 màu, dung lượng lớn.
+- Ảnh chi tiết, chât lượng cao: Sử dụng PNG hoặc lossless WebP
+- PNG không áp dụng thuật toán nén. Tuy nhiên dung lượng sẽ nhiều hơn format khác.
+- Lossless WebP áp dụng thuật toán nén lossless. Dung lượng nhỏ hơn PNG.
+- Đối với hình ảnh dạng hình học, ít chi tiết phức tạp nên sử dụng SVG.
+- Nếu ảnh có chứa text và yêu cầu search nên dùng web font.
+
+## Ảnh hưởng đến Largest Contentful Paint (LCP)
+
+Ảnh, video là tài nguyên lớn trong website, nếu tối ưu không tốt sẽ làm ảnh hưởng trực tiếp tới chỉ số đánh giá và xếp hạng website cũng như trải nghiệm người dùng.
+
+_Ref: [web.dev](https://web.dev/choose-the-right-image-format/#choose-the-right-image-format)_
